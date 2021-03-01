@@ -203,7 +203,7 @@ sub _get_machine_info($rvd, $args) {
     my $user = Ravada::Auth::SQL->new(name => $login) or die "Error: uknown user $login";
 
     my $info = $domain->info($user);
-    if ($info->{is_active} && ( !exists $info->{ip} || !$info->{ip})) {
+    if ((time % 30)<2 || ( $info->{is_active} && ( !exists $info->{ip} || !$info->{ip}))) {
        Ravada::Request->refresh_machine(id_domain => $info->{id}, uid => $user->id);
     }
 

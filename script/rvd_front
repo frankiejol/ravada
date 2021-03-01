@@ -143,9 +143,6 @@ hook before_routes => sub {
   my $url = $c->req->url->to_abs->path;
   my $host = $c->req->url->to_abs->host;
   $c->stash(css=>['/css/sb-admin.css']
-            ,js=>[
-                '/js/ravada.js'
-                ]
             ,csssnippets => []
             ,navbar_custom => 0
             ,url => undef
@@ -161,6 +158,12 @@ hook before_routes => sub {
             ,widget => $CONFIG_FRONT->{widget}
             );
 
+    $c->stash(js => [ '/js/ravada.js' ] )
+    unless $url =~ m{^/machine/clone/}
+            || $url =~ m{^/js/}
+            || $url =~ m{^/favicon.ico$}
+            ;
+
     $USER = _logged_in($c);
 
     my $user = '-';
@@ -169,9 +172,10 @@ hook before_routes => sub {
     if $CONFIG_FRONT->{log}->{log};
 
     return if $url =~ m{^/(css|font|img|js)}
+       || $url =~ m{^/favicon.iso$}
 	   || $url =~ m{^/fallback/.*\.(css|js|map)$};
 
-    return if $url =~ m{^/(login|logout|requirements|robots.txt)};
+    return if $url =~ m{^/(login|logout|requirements|robots.txt|favicon.ico)};
 
     if ( $RAVADA->is_in_maintenance ) {
         return login($c) if !$USER && $url =~ m{^/$};
@@ -2152,7 +2156,7 @@ sub _new_domain_name {
 sub run_request($c, $request, $anonymous = 0) {
     my $timeout = $SESSION_TIMEOUT;
     $timeout = $SESSION_TIMEOUT_ADMIN    if $USER->is_admin;
-    return $c->render(template => 'main/run_request', request => $request
+    return $c->render(template => 'main/vue/run_request', request => $request
         , auto_view => ( $CONFIG_FRONT->{auto_view} or $c->session('auto_view') or 0)
         , anonymous => $anonymous
         , timeout => $timeout * 1000

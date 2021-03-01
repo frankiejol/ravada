@@ -1,0 +1,60 @@
+<div v-if="domain.hardware.display.length<1">
+This Virtual Machine has no display hardware attached
+</div>
+
+<div v-if="domain_display.length>0">
+<b-card no-body>
+<b-tabs content-class="mt-3"
+        active-nav-item-class="font-weight-bold text-info"
+>
+    <b-tab
+        v-for="display in domain_display"
+        >
+        <template #title>{{display.driver}}</template>
+        <ul>
+            <li v-if="display.password">
+                <%=l 'The password for this virtual machine connection is :'%>
+                <input
+                            v-on:click="copy_password(display.driver)"
+                            type="text"
+                            v-bind:class="'js-copytextarea-'+display.driver"
+                                        v-model="display.password"
+                />
+                <i v-if="password_clipboard"><%=l 'copied to clipboard' %></i>
+            </li>
+            <li><b>Display URL :</b>
+                    <a v-on:click="copy_password(display.driver); redirect()"
+                        v-if="display.is_active"
+                        v-bind:href="display.display">{{display.display}}</a>
+                    <i v-if="!display.is_active" class="fas fa-sync-alt fa-spin"></i>
+            </li>
+            <li><b>Display IP :</b> {{display.ip}} </li>
+            <li><b>Display Port :</b> {{display.port}} </li>
+            <li v-if="display.extra.tls_port"><b>Display Port secure :</b> {{display.extra.tls_port}} </li>
+        </ul>
+        <div v-if="domain.is_active && display.is_active && display.file_extension && display.file_extension.length>0" class="container pl-5">
+            <div>
+                <a type="button" class="btn btn-success"
+                    v-on:click="view=display.driver; copy_password(display.driver); redirect();"
+                    v-bind:href="'/machine/display/'+display.driver+'/'+domain.id+'.'
+                    +display.file_extension">
+                        <b><%=l 'view'%></b></a>
+
+                <a type="button" class="btn btn-success"
+                    v-if="display.extra.tls_port"
+                    v-on:click="view=display.driver+'_tls'; copy_password(display.driver); redirect();"
+                    v-bind:href="'/machine/display/'+display.driver+'/tls/'+domain.id+'-tls.'+display.file_extension">
+                        <b><%=l 'view secure'%></b></a>
+            </div>
+                <span v-if="view=='spice'">
+                    <%=l 'If you can not see the machine screen in a few seconds check for a file called' %> <b>{{domain.id}}.{{display.file_extension}}</b> <%=l 'in your downloads folder.' %>
+                </span>
+                <span v-if="view=='spice_tls'"><%=l 'If you can not see the machine screen in a few seconds check for a file called' %> <b>{{domain.id}}-tls.{{display.file_extension}}</b> <%=l 'in your downloads folder.' %>
+                </span>
+                <br/>
+                <i v-if="display.driver == 'spice'"><%=l 'Press SHIFT + F12 to exit the virtual machine' %></i>
+        </div><!--domain active && file extension-->
+    </b-tab>
+</b-tabs>
+</b-card>
+</div>

@@ -126,7 +126,7 @@
             $scope.action = function(machine, action, confirmed) {
                 machine.action = false;
                 if (action == 'start') {
-                    if ((! confirmed) && (! machine.is_active)) {
+                    if (!$scope.anonymous && (! confirmed) && (! machine.is_active)) {
                         $scope.checkMaxMachines(action, machine); 
                     } else {
                         window.location.assign('/machine/clone/' + machine.id + '.html');
