@@ -62,7 +62,6 @@ var run_request = new Vue({
         }
         ,
         subscribe_request: function(url, id_request) {
-            console.log("subscribe request "+url+" "+id_request);
             var parent=this;
             this.id_request=id_request;
             this.id_domain=0;
@@ -77,7 +76,6 @@ var run_request = new Vue({
                 var data = JSON.parse(event.data);
                 parent.request = data;
                 parent.request_done = data.status == 'done';
-                //console.log(parent.request_done);
                 if ( data.id_domain && ! already_subscribed_to_domain ) {
                     already_subscribed_to_domain = true;
                     parent.id_domain=data.id_domain;
@@ -88,14 +86,12 @@ var run_request = new Vue({
         ,
         copy_password: function(driver) {
             this.view_password=true;
-            console.log("copy-password "+driver);
             var copyTextarea = document.querySelector('.js-copytextarea-'+driver);
             if (copyTextarea) {
                     copyTextarea.select();
                     try {
                         var successful = document.execCommand('copy');
                         var msg = successful ? 'successful' : 'unsuccessful';
-                        console.log('Copying text command was ' + msg);
                         this.password_clipboard=successful;
                     } catch (err) {
                         console.log('Oops, unable to copy');
@@ -124,4 +120,3 @@ var run_request = new Vue({
         }
     }
 });
-console.log("run request vue loaded");
