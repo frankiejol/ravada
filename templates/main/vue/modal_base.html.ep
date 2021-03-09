@@ -1,9 +1,8 @@
 <b-modal ref="modal_prepare_base" hide-header hide-footer>
-    <div class="d-block text-center">
+    <div class="d-block text-left" :key="refresh_modal_base">
         <h4><%=l 'Prepare Base' %></h4>
-
-        <div v-if="modal_machine.info && modal_machine.info.cdrom && modal_machine.info.cdrom.legth>0">
-            <p>This machine has a CD-ROM</p>
+        <div v-if="has_cdrom()">
+            <p>This machine has a CD-ROM {{modal_machine.info.cdrom.length}}</p>
                 <ul>
                     <li v-for="cdrom in modal_machine.info.cdrom">{{cdrom}}</li>
                 </ul>

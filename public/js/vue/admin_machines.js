@@ -16,6 +16,7 @@ var admin_machines = new Vue({
 
         ,pingbe_fail: false
 
+        ,refresh_modal_base: 0
         ,requests: []
 
         ,show_machine: {}
@@ -54,7 +55,10 @@ var admin_machines = new Vue({
             if (!machine.info) {
                 fetch("/machine/info/"+machine.id+".json")
                     .then(response => ( response.json()))
-                    .then(data => (machine.info = data));
+                    .then(data => { this.modal_machine.info = data;
+                        console.log(data.cdrom);
+                        self.refresh_modal_base++;
+                    });
             }
         }
         ,
@@ -93,6 +97,11 @@ var admin_machines = new Vue({
                 this.modal_machine.is_base = this.modal_machine.is_base_old;
                 this.bases.push(this.modal_machine.id);
             }
+        }
+        ,
+        has_cdrom: function() {
+            return this.modal_machine && this.modal_machine.info
+                && this.modal_machine.info.cdrom && this.modal_machine.info.cdrom.length>0;
         }
         ,
         request: function(request, args) {
