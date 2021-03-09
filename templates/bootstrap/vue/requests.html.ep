@@ -1,0 +1,21 @@
+<div
+    v-if="requests[0]">
+    <button type="button" class="btn btn-primary btn-sm"
+        v-on:click="show_requests = !show_requests"
+    >Requests
+        <span class="badge badge-warning" v-if="!show_requests">{{requests.length}}</span>
+        <span class="badge badge-warning" v-if="show_requests">hide</span>
+    </button>
+    <div v-if="show_requests"
+        class="alert alert-light border-primary text-primary" role="alert" id="requests"
+    >
+
+        <div v-for="request in requests">
+            <span class="badge badge-pill badge-light">{{request.date}} |</span>
+            {{request.command}}
+             <b>{{request.domain}}</b>
+             <i>{{request.status}}</i>
+             <span class="badge badge-pill badge-light">{{request.error}}</span>
+        </div>
+    </div>
+</div>

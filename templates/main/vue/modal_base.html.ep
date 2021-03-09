@@ -1,0 +1,44 @@
+<b-modal ref="modal_prepare_base" hide-header hide-footer>
+    <div class="d-block text-center">
+        <h4><%=l 'Prepare Base' %></h4>
+
+        <div v-if="modal_machine.info && modal_machine.info.cdrom && modal_machine.info.cdrom.legth>0">
+            <p>This machine has a CD-ROM</p>
+                <ul>
+                    <li v-for="cdrom in modal_machine.info.cdrom">{{cdrom}}</li>
+                </ul>
+                <input type="checkbox" v-model="with_cd" name="with_cd"/>
+                <label for="with_cd">Keep the CD for the clones</label>
+        </div>
+
+        <p><%=l 'Are you sure you want to prepare the base of' %> {{modal_machine.name}}?</p>
+
+      </div>
+      <div class="modal-footer">
+        <div v-if="!modal_machine.info"><%=l 'Checking hardware'%>
+            <i class="fas fa-sync-alt fa-spin"></i>
+        </div>
+        <b-button variant="outline-primary" @click="request('prepare_base', {id_domain: modal_machine.id});cancel_modal_prepare_base(true)"
+            :disabled="!modal_machine.info"
+        >
+        <span>Yes</span>
+        </b-button>
+        <b-button variant="outline-danger" @click="cancel_modal_prepare_base(false)">No</b-button>
+    </div>
+</b-modal>
+
+<b-modal ref="modal_remove_base" hide-header hide-footer>
+    <div class="d-block text-center">
+        <h4><%=l 'Remove Base' %></h4>
+
+        <p><%=l 'Are you sure you want to remove the base of' %> {{modal_machine.name}}?</p>
+
+      </div>
+      <div class="modal-footer">
+        <b-button variant="outline-primary" @click="request('remove_base', {id_domain: modal_machine.id});cancel_modal_remove_base(true)"
+        >
+        Yes
+        </b-button>
+        <b-button variant="outline-danger" @click="cancel_modal_remove_base(false)">No</b-button>
+    </div>
+</b-modal>

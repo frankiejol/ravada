@@ -1927,7 +1927,7 @@ sub admin {
     my $page = $c->stash('type');
     my @error = ();
 
-    push @{$c->stash->{css}}, '/css/admin.css';
+    push @{$c->stash->{css}}, '/css/admin.css' unless $page eq 'machines';
     push @{$c->stash->{js}}, '/js/admin.js';
 
     if ($page eq 'users') {
@@ -1961,7 +1961,9 @@ sub admin {
         my $host = $c->req->url->to_abs->host;
         $c->stash(url_login => "/login");
     }
-    $c->render( template => 'main/admin_'.$page);
+    my $template = "/main/admin_$page";
+    $template = "/main/vue/admin_$page" if $page eq 'machines';
+    $c->render( template => $template);
 };
 
 sub new_machine {

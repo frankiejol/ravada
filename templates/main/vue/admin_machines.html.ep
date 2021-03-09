@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- vue run request -->
+<html>
+%= include 'bootstrap/vue/header'
+<body role="document">
+    %= include 'bootstrap/navigation'
+    <div class="container theme-showcase" role="main">
+        <div id="admin_machines" class="jumbotron">
+
+            <div v-if="pingbe_fail" class="alert alert-danger">
+                <strong><%=l 'Error!' %></strong><%=l 'Backend no available!' %>
+            </div>
+%           if ($USER->is_operator || $USER->is_admin) {
+                %= include 'main/vue/check_ws'
+%           }
+        <div class="row">
+            <div class="col-md-5"><h2><%=l 'Virtual Machines' %></h2></div>
+            <div class="col-md-4" align="left">
+% 		if ($_user->can_create_machine){
+                <h2>
+                    <button class="btn btn-warning" v-on:click="list_machines={};subscribe_all('<%= url_for('ws_subscribe')->to_abs %>');"><i class="fa fa-sync-alt" aria-hidden="true"></i></button>
+                    <a type="button" class="btn btn-success" href="/new_machine.html">
+                        <b><%=l 'New Machine' %></b>
+                    <i v-if="download_working"
+                        class="fa fa-angle-double-down" aria-hidden="true"></i>
+                    <i v-if="download_done && !download_working"
+                        class="fa fa-check" aria-hidden="true"></i>
+                    </a>
+                </h2>
+%		}
+            </div>
+        </div>
+%=          include 'bootstrap/vue/requests'
+
+%=           include "/main/vue/modal_base"
+            <table id="list_machines" class="table admin-cont-body" border="1"
+                v-if="list_machines">
+            <thead>
+                <tr>
+                    <th ><div class="lgMachName machine-button" style="display:inline;float:down">
+                      <%=l 'Machine Name' %></div>
+                    </th>
+                    <th class="lgMachToggle">
+                      <span
+                       v-on:click="hideClones()"
+                       title="<%=l 'Show/Hide clones' %>">
+                       <%=l 'Base' %></span></th>
+                    <th class="lgMachToggle"><%=l 'Public'%></th>
+%                   if ($autostart) {
+                        <th class="lgMachToggle"><%=l 'Autostart'%></th>
+%                   }
+                    <th class="lgMachToggle machine-button">
+                      <div style="float:right">
+                        <%=l 'Status' %></div></th>
+                    <th class="lgMachActions"><%=l 'Actions' %></th>
+                    <th class="lgMachNode"><%=l 'Node' %></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="machine.show" v-for="(machine,index) in list_machines"
+                    v-bind:key="machine.key"
+                    class="bg-light">
+                    <td class="lgMachName" :style="{'padding-left': 1+machine._level*2+'em'}">
+
+                        <i class="far fa-clone" title="Cloned" v-if="!machine.is_pool && machine.id_base>0"></i>
+                        <i class="far fa-file-alt" title="Pool" v-if="machine.is_pool"></i>
+
+                        <a align="right"
+                            v-bind:href='"/machine/manage/"+machine.id+".html"'
+                            v-bind:class="{base: machine.is_base
+                              ,disabled: !machine.can_manage}"
+                        title ="<%=l 'Manage machine' %>">{{machine.name}}</a> {{machine.comment}}
+                   <span class="comment" v-if="machine.is_volatile"><%=l 'Volatile' %></span>
+                   <button v-if="machine.has_clones" type="button"
+                        class="badge badge-light text-blue"
+                        v-on:click="toggle_show_clones(machine.id)"
+                        title="<%=l 'Show/Hide clones' %>">
+                        <b v-if="show_clones[machine.id]"
+                            >-</b>
+                        <b v-if="!show_clones[machine.id]"
+                            >+</b>
+                   </button>
+                    </td>
+                    <td class="lgMachToggle">
+%                       if ($_user->can_create_base ) {
+                            <i v-if="machine.has_clones" class="fa fa-check" aria-hidden="true"
+                        title ="<%=l 'Cannot remove base, machine has clones' %>"></i>
+                            <input type="checkbox" v-model="bases"
+                                                   :value="machine.id"
+                                                   v-if="!machine.has_clones"
+                                                   v-on:click="open_modal_prepare_base(machine)"
+                            />
+%                       }
+                    </td>
+                    <td class="lgMachToggle">
+%                       if ($_user->can_create_base ) {
+                            <input type="checkbox" v-model="bases_public"
+                                                   :value="machine.id"
+                                                   v-if="machine.is_base"
+                                                   v-on:click="toggle_public(machine)"
+                            />
+%                       }
+                    </td>
+
+                    <td>{{machine.is_active}}</td>
+                </tr>
+            </tbody>
+            </table>
+        </div><!-- list_machines -->
+
+        </div><!-- admin_machines jumbotron -->
+    </div><!-- container-->
+    <script src="/js/vue/admin_machines.js"></script>
+    <script>
+        admin_machines.subscribe_all('<%= url_for('ws_subscribe')->to_abs %>');
+%#        run_request.auto_view=<%= $auto_view %>;
+    </script>
+</body>
+
+</html>
