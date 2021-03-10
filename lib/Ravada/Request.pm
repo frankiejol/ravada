@@ -65,6 +65,8 @@ our %VALID_ARG = (
     ,restore_domain => { id_domain => 1, uid => 1 }
     ,shutdown_domain => { name => 2, id_domain => 2, uid => 1, timeout => 2, at => 2
                        , id_vm => 2 }
+    ,shutdown => { name => 2, id_domain => 2, uid => 1, timeout => 2, at => 2
+                       , id_vm => 2, timeout => 2 }
     ,force_shutdown_domain => { id_domain => 1, uid => 1, at => 2, id_vm => 2 }
     ,reboot_domain => { name => 2, id_domain => 2, uid => 1, timeout => 2, at => 2
                        , id_vm => 2 }
@@ -73,12 +75,14 @@ our %VALID_ARG = (
     ,domain_autostart => { id_domain => 1 , uid => 1, value => 2 }
     ,copy_screenshot => { id_domain => 1 }
     ,start_domain => {%$args_manage, remote_ip => 2, name => 2, id_domain => 2 }
+    ,start => {%$args_manage, remote_ip => 2, name => 2, id_domain => 2 }
     ,start_clones => { id_domain => 1, uid => 1, remote_ip => 1, sequential => 2 }
     ,shutdown_clones => { id_domain => 1, uid => 1, timeout => 2 }
     ,rename_domain => { uid => 1, name => 1, id_domain => 1}
     ,dettach => { uid => 1, id_domain => 1 }
     ,set_driver => {uid => 1, id_domain => 1, id_option => 1}
     ,hybernate=> {uid => 1, id_domain => 1}
+    ,hibernate=> {uid => 1, id_domain => 1}
     ,download => {uid => 2, id_iso => 1, id_vm => 2, verbose => 2, delay => 2, test => 2}
     ,refresh_storage => { id_vm => 2 }
     ,list_storage_pools => { id_vm => 1 , uid => 1 }

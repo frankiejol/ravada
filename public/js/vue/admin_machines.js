@@ -9,10 +9,14 @@ var admin_machines = new Vue({
         ,download_done: false
         ,download_working: false
 
+        ,error: ''
+
         ,list_machines: {}
         ,list_machines_time: 0
 
         ,modal_machine: {}
+
+        ,nodes: 0
 
         ,pingbe_fail: false
 
@@ -56,7 +60,6 @@ var admin_machines = new Vue({
                 fetch("/machine/info/"+machine.id+".json")
                     .then(response => ( response.json()))
                     .then(data => { this.modal_machine.info = data;
-                        console.log(data.cdrom);
                         self.refresh_modal_base++;
                     });
             }
@@ -104,15 +107,37 @@ var admin_machines = new Vue({
                 && this.modal_machine.info.cdrom && this.modal_machine.info.cdrom.length>0;
         }
         ,
+        list_nodes: function() {
+            fetch('/list_nodes.json')
+            .then(response => response.json())
+            .then(data => {
+                    this.nodes=data.length
+                }
+            );
+        }
+        ,
         request: function(request, args) {
+            var self = this;
             var options = {
                 method: "POST"
                 ,headers: { "Content-Type": "application/json" }
                 ,body: JSON.stringify(args)
             };
+            if (args.id_domain) {
+                for (var i=0;  i<list_machines.length; i++){
+                    var mach = list_machines[i];
+                    if (mach.id == args.id_domain) {
+                        mach.is_locked=1;
+                    }
+                }
+            }
             fetch('/request/'+request+'/', options)
             .then(response => response.json())
-            .then(data => (this.id_request = data.id));
+            .then(data => {
+                    self.error=data.error;
+                    this.id_request = data.id;
+                }
+            );
             ;
         }
         ,
@@ -221,6 +246,18 @@ var admin_machines = new Vue({
             this.subscribe_list_machines(url);
             this.subscribe_list_requests(url);
             this.subscribe_ping_backend(url);
+            this.list_nodes();
+        }
+        ,
+        set_autostart: function(id, value) {
+            if (value) {
+                value = 1;
+            } else {
+                value = 0;
+            }
+            fetch("/machine/autostart/"+id+"/"+value)
+                    .then(response => ( response.json()))
+
         }
         ,
         set_show_clones: function(id, show) {

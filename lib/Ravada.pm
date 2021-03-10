@@ -3664,7 +3664,7 @@ sub _cmd_shutdown {
     my $uid = $request->args('uid');
     my $name = $request->defined_arg('name');
     my $id_domain = $request->defined_arg('id_domain');
-    my $timeout = ($request->args('timeout') or 60);
+    my $timeout = ($request->defined_arg('timeout') or 120);
     my $id_vm = $request->defined_arg('id_vm');
 
     confess "ERROR: Missing id_domain or name" if !$id_domain && !$name;
@@ -4457,6 +4457,7 @@ sub _req_method {
       ,shutdown => \&_cmd_shutdown
       ,reboot => \&_cmd_reboot
      ,hybernate => \&_cmd_hybernate
+     ,hibernate => \&_cmd_hybernate
     ,set_driver => \&_cmd_set_driver
     ,screenshot => \&_cmd_screenshot
     ,add_disk => \&_cmd_add_disk

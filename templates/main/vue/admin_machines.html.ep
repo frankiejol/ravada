@@ -4,16 +4,21 @@
 %= include 'bootstrap/vue/header'
 <body role="document">
     %= include 'bootstrap/navigation'
-    <div class="container theme-showcase" role="main">
+    <div class="panel-body">
         <div id="admin_machines" class="jumbotron">
 
             <div v-if="pingbe_fail" class="alert alert-danger">
                 <strong><%=l 'Error!' %></strong><%=l 'Backend no available!' %>
             </div>
+            <div v-if="error" class="alert alert-danger">
+                <strong><%=l 'Error!' %></strong>{{error}}
+            </div>
+
 %           if ($USER->is_operator || $USER->is_admin) {
                 %= include 'main/vue/check_ws'
 %           }
-        <div class="row">
+        <div class="container">
+            <div class="row">
             <div class="col-md-5"><h2><%=l 'Virtual Machines' %></h2></div>
             <div class="col-md-4" align="left">
 % 		if ($_user->can_create_machine){
@@ -29,11 +34,12 @@
                 </h2>
 %		}
             </div>
-        </div>
+            </div>
 %=          include 'bootstrap/vue/requests'
+        </div>
 
 %=           include "/main/vue/modal_base"
-            <table id="list_machines" class="table admin-cont-body" border="1"
+            <table id="list_machines" class="table admin-cont-body" border="2"
                 v-if="list_machines">
             <thead>
                 <tr>
@@ -53,7 +59,7 @@
                       <div style="float:right">
                         <%=l 'Status' %></div></th>
                     <th class="lgMachActions"><%=l 'Actions' %></th>
-                    <th class="lgMachNode"><%=l 'Node' %></th>
+                    <th v-if="nodes>1" class="lgMachNode"><%=l 'Node' %></th>
                 </tr>
             </thead>
             <tbody>
@@ -87,6 +93,7 @@
                         title ="<%=l 'Cannot remove base, machine has clones' %>"></i>
                             <input type="checkbox" v-model="bases"
                                                    :value="machine.id"
+                                                   :disabled="machine.is_locked>0"
                                                    v-if="!machine.has_clones"
                                                    v-on:click="open_modal_prepare_base(machine)"
                             />
@@ -102,7 +109,72 @@
 %                       }
                     </td>
 
-                    <td>{{machine.is_active}}</td>
+%                   if ($autostart && $_user->is_admin) {
+                        <td class="lgMachToggle">
+				            <input type="checkbox"
+                            v-if="!machine.has_clones && !machine.is_base"
+                            v-model="machine.autostart"
+                            v-on:change="set_autostart(machine.id,machine.autostart)"
+                            title="autostart">
+			            </td>
+%                   }
+                    <td class="lgMachActions">
+                        <span style="float:right;"
+                            v-if="machine.is_paused && machine.is_active"
+                            class="badge label-warning"><%=l 'Paused' %></span>
+                        <span style="float:right;"
+                            v-if="!machine.is_paused && machine.is_active"
+                            class="badge badge-success"><%=l 'Running' %></span>
+                        <span style="float:right;"
+                            v-if="!machine.is_active && !machine.is_hibernated"
+                            class="badge badge-danger"><%=l 'Down' %></span>
+                        <span style="float:right;"
+                            v-if="machine.is_hibernated"
+                            class="badge badge-warning"><%=l 'Hibernated' %></span>
+                        <br><span style="float:right;" v-if="machine.is_active"
+                            class="badge badge-secondary">{{machine.remote_ip}}</span>
+                    </td>
+                   <td class="lgMachToggle">
+                      <div v-if="!machine.is_locked && !machine.is_base">
+                        <button type="button" class="btn btn-success btn-sm"
+                         v-on:click="request('start',{id_domain: machine.id})"
+                         :disabled="machine.is_active>0"
+                         v-if="machine.can_start"
+                         title="<%=l 'Start' %>">
+                         <i class="fa fa-play"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm"
+                         v-on:click="request('hibernate',{ id_domain: machine.id })"
+                         :disabled="!machine.is_active"
+                         v-if="machine.can_hibernate"
+                         title="<%=l 'Hibernate' %>">
+                          <i class="fa fa-pause"></i>
+                       </button>
+                        <button type="button" class="btn btn-danger btn-sm"
+                         v-on:click="request('shutdown',{id_domain: machine.id})"
+                         :disabled="!machine.is_active"
+                         v-if="machine.can_shutdown"
+                         title="<%=l 'ShutDown' %>">
+                          <i class="fa fa-power-off"></i>
+                       </button>
+                       <a type="button" class="btn btn-primary btn-sm"
+                         :href="'/machine/view/'+machine.id+'.html'"
+                         title="<%=l 'View' %>">
+                          <i class="fa fa-desktop"></i>
+                       </a>
+                      </div>
+                      <div v-if="machine.is_locked">
+                        <span class="badge badge-pill badge-light">
+                            <%=l 'Machine' %>
+                            <a href="/request/{{machine.is_locked}}.html"> <%=l 'locked' %></a>
+                        </span>
+                      </div>
+                      <div v-if="machine.is_base && !machine.is_locked"
+                          ><span class="badge badge-pill badge-light"><%=l 'This Machine is a base' %></span></div>
+                    </td>
+                    <td class="lgMachNode" v-if="nodes>1">
+                        <span class="badge badge-info" title="<%=l 'Node'%>">{{machine.node}}</span>
+                    </td>
                 </tr>
             </tbody>
             </table>
