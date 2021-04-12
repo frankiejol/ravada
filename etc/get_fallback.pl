@@ -69,7 +69,8 @@ get_version_badge();
 
 open my $in,'<',$FILE_CONFIG or die "$! $FILE_CONFIG";
 while (<$in>) {
-    next if /^#/;
+    s/#.*//;
+    next if /^$/;
     my ($url, $dst) = split;
     my $file = download($url, $dst);
     uncompress($file) if $file =~ /\.zip$/;

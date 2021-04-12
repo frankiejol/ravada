@@ -9,6 +9,7 @@
 % }
     <title>VUE Ravada VDI</title>
 
+% if (!$fallback) {
 <!-- Load required Bootstrap and BootstrapVue CSS -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -27,5 +28,26 @@
 <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
 
 <link href="https://use.fontawesome.com/releases/v5.0.7/css/all.css" rel="stylesheet">
+
+% } else {
+<script src="/fallback/jquery-3.2.1.slim.min.js"></script>
+<script src="/fallback/popper.min.js"></script>
+<script src="/fallback/bootstrap.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/fallback/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="/fallback/bootstrap-vue.min.css" />
+
+<!-- Load polyfills to support older browsers -->
+<script src="/fallback/polyfill.min.js"></script>
+
+<!-- Load Vue followed by BootstrapVue -->
+<script src="/fallback/vue.min.js"></script>
+<script src="/fallback/bootstrap-vue.min.js"></script>
+
+<!-- Load the following for BootstrapVueIcons support -->
+<script src="/fallback/bootstrap-vue-icons.min.js"></script>
+
+<link href="/fallback/fontawesome-free-5.10.1-web/css/all.css" rel="stylesheet">
+
+% }
 
 </head>
